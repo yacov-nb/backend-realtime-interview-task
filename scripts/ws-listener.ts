@@ -16,6 +16,11 @@ socket.on('measurement', (measurement) => {
   console.log('measurement:', measurement);
 });
 
+// The server reports a rejected subscription here instead of calling the ack.
+socket.on('exception', (error) => {
+  console.error('exception:', error);
+});
+
 socket.on('connect_error', (error) => {
   console.error('connect_error:', error.message);
 });
