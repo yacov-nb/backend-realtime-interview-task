@@ -48,11 +48,3 @@ Generate sample events in another terminal:
 ```bash
 npm run simulate -- user-123
 ```
-
-## Candidate task
-
-See [TASK.md](./TASK.md).
-
-## Notes
-
-This repository intentionally contains incomplete code. That is part of the exercise.
