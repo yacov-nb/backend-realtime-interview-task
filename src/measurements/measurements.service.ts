@@ -14,12 +14,13 @@ export class MeasurementsService {
   ) {}
 
   async ingest(dto: CreateMeasurementDto): Promise<Measurement> {
-    // TODO(candidate):
-    // 1. Convert the DTO into a Measurement entity.
-    // 2. Persist it.
-    // 3. Publish it to realtime clients only after persistence succeeds.
-    // 4. Return the persisted entity.
-    throw new Error('Not implemented');
+    const entity = this.repository.create({
+      ...dto,
+      timestamp: new Date(dto.timestamp),
+    });
+    const saved = await this.repository.save(entity);
+    await this.realtimeBus.publish(saved);
+    return saved;
   }
 
   findRecent(userId: string, limit: number): Promise<Measurement[]> {

@@ -4,6 +4,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Measurement } from '../measurements/measurement.entity';
@@ -19,14 +20,16 @@ export class RealtimeGateway {
   async subscribe(
     @ConnectedSocket() client: Socket,
     @MessageBody() body: { userId?: string },
-  ) {
-    // TODO(candidate): validate the requested userId and join a user-specific room.
-    // Return a small acknowledgement object so the caller can tell subscription worked.
-    throw new Error('Not implemented');
+  ): Promise<{ subscribed: true; userId: string }> {
+    const userId = body?.userId?.trim();
+    if (!userId) {
+      throw new WsException('userId is required');
+    }
+    await client.join(`user:${userId}`);
+    return { subscribed: true, userId };
   }
 
   publishMeasurement(measurement: Measurement): void {
-    // TODO(candidate): emit only to clients subscribed to this measurement's user.
-    throw new Error('Not implemented');
+    this.server.to(`user:${measurement.userId}`).emit('measurement', measurement);
   }
 }
